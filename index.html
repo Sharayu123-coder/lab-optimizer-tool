@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lab-Workflow AI Optimizer | Sharayu Khangan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap');
+        body { font-family: 'Inter', sans-serif; background-color: #f8fafc; color: #1e293b; }
+        .gradient-brand { background: linear-gradient(135deg, #1e40af 0%, #7c3aed 100%); }
+        .glass-card { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4 md:p-8 bg-slate-50">
+
+    <!-- Main Tool Card -->
+    <div class="w-full max-w-2xl bg-white rounded-[2rem] shadow-2xl overflow-hidden border border-slate-200 glass-card">
+        
+        <!-- Header Section -->
+        <div class="gradient-brand p-10 text-white text-center">
+            <div class="inline-flex items-center justify-center w-20 h-20 bg-white/20 rounded-3xl mb-6 backdrop-blur-sm">
+                <i class="fas fa-flask-vial text-4xl"></i>
+            </div>
+            <h1 class="text-3xl font-extrabold tracking-tight">Lab-Workflow Optimizer</h1>
+            <p class="text-blue-100 mt-3 text-sm font-medium opacity-90 leading-relaxed">
+                Bridging Biopharma Expertise with Data Analytics Automation.
+            </p>
+        </div>
+
+        <!-- Interactive Content -->
+        <div class="p-8 md:p-12 space-y-8">
+            <div class="space-y-4">
+                <label class="flex items-center gap-2 text-sm font-bold text-slate-700 ml-1">
+                    <i class="fas fa-keyboard text-blue-500"></i>
+                    Describe a manual lab or data task:
+                </label>
+                <textarea id="lab-task" rows="4" 
+                    class="w-full p-5 bg-slate-50 border border-slate-200 rounded-2xl outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 text-sm transition-all placeholder:text-slate-400" 
+                    placeholder="e.g., Manually verifying 100+ HPLC results against master sheets daily..."></textarea>
+            </div>
+            
+            <button onclick="optimizeTask()" id="opt-btn" 
+                class="w-full gradient-brand text-white py-5 rounded-2xl font-extrabold hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-3">
+                <span>Generate Automation Strategy</span>
+                <i class="fas fa-wand-magic-sparkles"></i>
+            </button>
+            
+            <!-- Result Output -->
+            <div id="opt-result" class="hidden transition-all duration-500">
+                <div class="h-px bg-slate-100 my-8"></div>
+                <div class="flex items-center gap-2 mb-4 text-indigo-600 font-extrabold text-sm uppercase tracking-wider">
+                    <i class="fas fa-microchip"></i> AI Optimized Workflow
+                </div>
+                <div id="ai-response-text" class="p-8 bg-indigo-50/50 rounded-3xl text-sm border border-indigo-100 text-slate-700 leading-relaxed shadow-inner">
+                    <!-- Results populate here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Branding Footer -->
+    <div class="mt-10 text-center space-y-2">
+        <p class="text-slate-500 text-[11px] font-bold uppercase tracking-[0.3em]">Developed by Sharayu Khangan</p>
+        <div class="flex items-center justify-center gap-4 text-slate-400 text-xs italic">
+            <span>Powered by Gemini 2.5 Flash</span>
+            <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+            <span>Healthcare Data Analytics Portfolio</span>
+        </div>
+    </div>
+
+    <script>
+        const apiKey = ""; // API key is handled by the environment
+
+        async function optimizeTask() {
+            const task = document.getElementById('lab-task').value;
+            const btn = document.getElementById('opt-btn');
+            const resultWrapper = document.getElementById('opt-result');
+            const resultDiv = document.getElementById('ai-response-text');
+            
+            if (!task) return;
+
+            // UI Loading State
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Thinking...';
+            btn.disabled = true;
+
+            const systemPrompt = "You are a Senior Healthcare Data Analyst. Sharayu Khangan, a former Biochemist at Enzene Biosciences, is helping a lab automate. Suggest a high-impact 3-bullet point strategy using Python or SQL. Focus on speed and GMP data integrity.";
+            
+            try {
+                const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        contents: [{ parts: [{ text: task }] }],
+                        systemInstruction: { parts: [{ text: systemPrompt }] }
+                    })
+                });
+                
+                const result = await response.json();
+                const aiText = result.candidates?.[0]?.content?.parts?.[0]?.text || "I'm sorry, I couldn't generate a strategy. Please try again.";
+                
+                // Format and show result
+                resultDiv.innerHTML = aiText.replace(/\n/g, '<br>');
+                resultWrapper.classList.remove('hidden');
+                
+                // Smooth scroll to result
+                setTimeout(() => {
+                    resultWrapper.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }, 100);
+
+            } catch (e) {
+                resultDiv.innerText = "Connection error. Please check your network and try again.";
+                resultWrapper.classList.remove('hidden');
+            } finally {
+                btn.innerHTML = '<span>Generate Automation Strategy</span> <i class="fas fa-wand-magic-sparkles"></i>';
+                btn.disabled = false;
+            }
+        }
+    </script>
+</body>
+</html>
