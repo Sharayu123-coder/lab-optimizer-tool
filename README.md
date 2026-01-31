@@ -1,7 +1,5 @@
 🧪 Lab-to-Logic: AI-Powered Workflow Optimizer 🚀
 
-Live Demo: https://pub-ac397c96ae2647d4a45221e91f4ce5dd.r2.dev/AYz-lgAZPO.html
-
 📌 Project Overview
 
 The Lab-Workflow AI Optimizer is a specialized tool built to solve the "Manual Bottleneck" in pharmaceutical and healthcare laboratory environments.
